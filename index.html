@@ -3,31 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ứng dụng Phân Tích Kết Quả</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Dự Đoán</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Ứng dụng Phân Tích Kết Quả</h1>
-    <form id="data-form">
-        <label for="values">Nhập các giá trị (cách nhau bằng khoảng trắng):</label><br>
-        <input type="text" id="values" name="values" required><br><br>
-        <input type="submit" value="Phân tích">
-    </form>
-
-    <div id="results" style="display: none;">
-        <h2>Kết quả phân tích</h2>
-        <p><strong>Số lượng kết quả:</strong></p>
-        <ul id="counts"></ul>
-
-        <p><strong>Xác suất xuất hiện của từng loại màu:</strong></p>
-        <ul id="probabilities"></ul>
-
-        <p><strong>Kết quả dự đoán tiếp theo:</strong> <span id="next-result"></span></p>
-
-        <h2>Đồ thị phân phối xác suất</h2>
-        <img id="chart" alt="Đồ thị phân phối xác suất">
+    <div class="container">
+        <h1>Dự Đoán</h1>
+        <form id="card-form">
+            <label for="cards">Nhập các lá bài đã xuất hiện (vd: 2H, 3S, 10D):</label>
+            <input type="text" id="cards" placeholder="2H, 3S, 10D" required>
+            <button type="submit">Dự Đoán</button>
+        </form>
+        <div id="result"></div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
