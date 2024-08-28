@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Number Generator with Chart</title>
+    <title>Continuous Random Number Generator with Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>Random Number Generator with Chart</h1>
+    <h1>Continuous Random Number Generator with Chart</h1>
     <label for="seed">Enter Seed:</label>
     <input type="number" id="seed" value="0">
-    <button onclick="generateNumbers()">Generate Numbers</button>
+    <button onclick="startGenerating()">Start Generating</button>
+    <button onclick="stopGenerating()">Stop Generating</button>
     <canvas id="myChart" width="400" height="200"></canvas>
 
     <script>
+        let chart;
+        let intervalId;
+
         // Simple pseudo-random number generator with a seed
         function seededRandom(seed) {
             seed = (seed * 9301 + 49297) % 233280;
@@ -22,9 +26,11 @@
 
         // Generate an array of random numbers based on the seed
         function generateRandomNumbers(seed, count) {
+            const min = 3;
+            const max = 18;
             const numbers = [];
             for (let i = 0; i < count; i++) {
-                const randomValue = 3 + Math.floor(seededRandom(seed) * (18 - 3 + 1));
+                const randomValue = min + Math.floor(seededRandom(seed) * (max - min + 1));
                 numbers.push(randomValue);
                 seed++;
             }
@@ -32,24 +38,28 @@
         }
 
         // Update chart data and render
-        function updateChart(chart, data) {
+        function updateChart(data) {
             chart.data.labels = data.map((_, index) => `Number ${index + 1}`);
             chart.data.datasets[0].data = data;
             chart.update();
         }
 
-        function generateNumbers() {
+        function startGenerating() {
             const seed = parseInt(document.getElementById('seed').value);
-            const numbers = generateRandomNumbers(seed, 10);
+            let currentSeed = seed;
 
+            // Create or update the chart
             const ctx = document.getElementById('myChart').getContext('2d');
-            const chart = new Chart(ctx, {
+            if (chart) {
+                chart.destroy();  // Destroy existing chart to avoid multiple instances
+            }
+            chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: numbers.map((_, index) => `Number ${index + 1}`),
+                    labels: [],
                     datasets: [{
                         label: 'Random Numbers',
-                        data: numbers,
+                        data: [],
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1,
                         fill: false
@@ -70,8 +80,16 @@
                 }
             });
 
-            // Update chart with new data
-            updateChart(chart, numbers);
+            // Update chart every second
+            intervalId = setInterval(() => {
+                const numbers = generateRandomNumbers(currentSeed, 10);
+                updateChart(numbers);
+                currentSeed++;
+            }, 1000);  // Update interval set to 1 second
+        }
+
+        function stopGenerating() {
+            clearInterval(intervalId);
         }
     </script>
 </body>
