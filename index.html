@@ -5,74 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Number Generator with Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Random Number Generator with Chart</h1>
+    <label for="seed">Enter Seed:</label>
+    <input type="number" id="seed" value="0">
+    <button onclick="generateNumbers()">Generate Numbers</button>
+    <canvas id="myChart" width="400" height="200"></canvas>
+
     <script>
-        function pseudoRandom(seed) {
-            // Hàm sinh số ngẫu nhiên giả lập dựa trên seed
-            let x = Math.sin(seed) * 10000;
-            return x - Math.floor(x);
+        // Simple pseudo-random number generator with a seed
+        function seededRandom(seed) {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
         }
 
+        // Generate an array of random numbers based on the seed
         function generateRandomNumbers(seed, count) {
-            let numbers = [];
+            const numbers = [];
             for (let i = 0; i < count; i++) {
-                seed += 1; // Thay đổi seed để tạo số khác
-                numbers.push(pseudoRandom(seed));
+                const randomValue = 3 + Math.floor(seededRandom(seed) * (18 - 3 + 1));
+                numbers.push(randomValue);
+                seed++;
             }
             return numbers;
         }
 
-        function updateChart() {
-            const seed = parseInt(document.getElementById('seed').value);
-            const count = parseInt(document.getElementById('count').value);
-            const numbers = generateRandomNumbers(seed, count);
-
-            chart.data.labels = numbers.map((_, i) => i + 1);
-            chart.data.datasets[0].data = numbers;
+        // Update chart data and render
+        function updateChart(chart, data) {
+            chart.data.labels = data.map((_, index) => `Number ${index + 1}`);
+            chart.data.datasets[0].data = data;
             chart.update();
         }
 
-        let chart;
-        window.onload = function () {
+        function generateNumbers() {
+            const seed = parseInt(document.getElementById('seed').value);
+            const numbers = generateRandomNumbers(seed, 10);
+
             const ctx = document.getElementById('myChart').getContext('2d');
-            chart = new Chart(ctx, {
+            const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: [],
+                    labels: numbers.map((_, index) => `Number ${index + 1}`),
                     datasets: [{
                         label: 'Random Numbers',
-                        data: [],
+                        data: numbers,
                         borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        fill: false
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
                         x: {
                             beginAtZero: true
                         },
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toFixed(2);
-                                }
-                            }
+                            min: 0,
+                            max: 20
                         }
                     }
                 }
             });
+
+            // Update chart with new data
+            updateChart(chart, numbers);
         }
     </script>
-</head>
-<body>
-    <h1>Random Number Generator with Chart</h1>
-    <label for="seed">Seed:</label>
-    <input type="number" id="seed" value="0">
-    <label for="count">Number of Values:</label>
-    <input type="number" id="count" value="10">
-    <button onclick="updateChart()">Generate</button>
-    
-    <canvas id="myChart"></canvas>
 </body>
 </html>
