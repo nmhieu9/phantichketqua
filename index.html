@@ -38,14 +38,21 @@
         }
 
         // Update chart data and render
-        function updateChart(data) {
-            chart.data.labels = data.map((_, index) => `Number ${index + 1}`);
-            chart.data.datasets[0].data = data;
+        function updateChart(chart, data) {
+            if (chart.data.labels.length > 0) {
+                // Remove the first label and data point
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+
+            // Add new label and data point
+            chart.data.labels.push(`Number ${chart.data.labels.length + 1}`);
+            chart.data.datasets[0].data.push(data[data.length - 1]);
             chart.update();
         }
 
         function startGenerating() {
-            const seed = parseInt(document.getElementById('seed').value);
+            const seed = parseInt(document.getElementById('seed').value, 10);
             let currentSeed = seed;
 
             // Create or update the chart
@@ -69,7 +76,11 @@
                     responsive: true,
                     scales: {
                         x: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 10
+                            }
                         },
                         y: {
                             beginAtZero: true,
@@ -82,8 +93,8 @@
 
             // Update chart every second
             intervalId = setInterval(() => {
-                const numbers = generateRandomNumbers(currentSeed, 10);
-                updateChart(numbers);
+                const numbers = generateRandomNumbers(currentSeed, 1);
+                updateChart(chart, numbers);
                 currentSeed++;
             }, 1000);  // Update interval set to 1 second
         }
